@@ -1,0 +1,7 @@
+opencv-python>=4.8
+cvzone>=1.6.1
+mediapipe>=0.10.9
+pynput>=1.7.6
+pyautogui>=0.9.54
+numpy>=1.24
+screeninfo>=0.8
