@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- AR Hand Tracking (Hyprland/Wayland port) ---
+# Local virtual environments (any name, e.g. venv311)
+venv*/
+# MediaPipe hand model — auto-downloaded at runtime, not source
+*.task
+# Editor/backup leftovers
+*.bak

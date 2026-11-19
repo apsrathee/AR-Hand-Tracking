@@ -1,0 +1,22 @@
+[Unit]
+Description=AR Hand Tracking (webcam mouse control) - Hyprland/Wayland port
+After=graphical-session.target
+
+[Service]
+Type=simple
+# setup.sh replaces %h/Projects/AR-Hand-Tracking with the actual clone path.
+WorkingDirectory=%h/Projects/AR-Hand-Tracking
+Environment=DISPLAY=:0
+Environment=QT_QPA_PLATFORM=xcb
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=OMP_NUM_THREADS=1
+Environment=NUMEXPR_NUM_THREADS=1
+ExecStart=%h/Projects/AR-Hand-Tracking/deploy/run.sh
+Restart=on-failure
+RestartSec=5
+# Keep systemd-oomd from reaping the app under transient memory pressure.
+ManagedOOMMemoryPressure=auto
+ManagedOOMSwap=auto
+
+[Install]
+WantedBy=default.target

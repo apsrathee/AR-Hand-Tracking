@@ -42,23 +42,28 @@ def recognize(fingers, lm, hand_size=None) -> str:
     else:
         pinch_thresh = _BASE_PINCH
 
-    # Pinch checked before finger combos — pinch overrides everything
-    if _dist(lm, 4, 8) < pinch_thresh:
+    # Pinch = thumb+index tips together WITH the index curled (not extended).
+    # Without the fingers[1]==0 gate, a pointing hand (index up, thumb nearby)
+    # falsely reads as a pinch and the cursor never gets MOVE.
+    if fingers[1] == 0 and _dist(lm, 4, 8) < pinch_thresh:
         return CLICK
 
-    # MOVE: index up, middle/ring/pinky down. Thumb state intentionally ignored.
-    # fingersUp() reads thumb direction based on hand['type'] label to avoid confusions diue to mirror flip.
-    if fingers[1] == 1 and fingers[2] == 0 and fingers[3] == 0 and fingers[4] == 0:
-        return MOVE
-
+    # SCROLL: index+middle up, ring+pinky down (checked before the lenient MOVE).
     if fingers[1] == 1 and fingers[2] == 1 and fingers[3] == 0 and fingers[4] == 0:
-        # positive diff = middle tip is lower on screen = index is higher = scroll up
+        # positive diff = middle tip lower on screen = index higher = scroll up
         diff = lm[12][2] - lm[8][2]
-        if abs(diff) < _SCROLL_DEADZONE:
-            return IDLE   # ambiguous flat pose, do nothing
-        return SCROLL_UP if diff > 0 else SCROLL_DOWN
+        if abs(diff) >= _SCROLL_DEADZONE:
+            return SCROLL_UP if diff > 0 else SCROLL_DOWN
+        # flat peace sign falls through to MOVE
 
+    # RIGHT CLICK: thumb+pinky only
     if fingers == [1, 0, 0, 0, 1]:
         return RIGHT_CLICK
+
+    # MOVE: index extended. Lenient — middle/ring/pinky may be loose, so both a
+    # clean point and an open hand drive the cursor (strict index-only was too
+    # finicky to hold and the cursor never moved).
+    if fingers[1] == 1:
+        return MOVE
 
     return IDLE
