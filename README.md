@@ -1,3 +1,13 @@
+> **This is a modified fork (Hyprland / Wayland / Arch port).**
+> Original project: **[apsrathee/AR-Hand-Tracking](https://github.com/apsrathee/AR-Hand-Tracking)** by apsrathee (_cloud-), MIT licensed.
+> All credit for the original app goes to its author. This fork adds a Wayland
+> mouse-input fallback (ydotool), pins MediaPipe to a version that avoids an
+> upstream Arch SIGKILL bug, and adds an optional positional movement mode.
+> See **[PORTING.md](PORTING.md)** for exactly what changed, why, and the credits.
+> The original README follows, unchanged.
+
+---
+
 # AR Hand Tracking — Gesture Mouse Controller
 
 Control your PC's mouse cursor entirely with hand gestures via your webcam. No extra hardware needed. Built with Python, OpenCV, cvzone, and MediaPipe's 21-point hand skeleton model.

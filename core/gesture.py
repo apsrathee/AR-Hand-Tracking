@@ -14,6 +14,12 @@ _REF_HAND_SIZE   = CFG.get("ref_hand_size", 100)
 # Min y-pixel gap between index and middle tips to confirm scroll direction.
 # Without this, a nearly-flat hand flickers between scroll_up and scroll_down.
 _SCROLL_DEADZONE = CFG.get("scroll_min_diff", 15)
+# If true, pinch only triggers when index is curled (fingers[1]==0).
+# If false (default, original behaviour), pinch triggers whenever thumb+index tips are close.
+_REQUIRE_CURLED  = CFG.get("pinch_requires_curled_index", False)
+# If true, MOVE triggers on any extended index (lenient, open hand works).
+# If false (default, original behaviour), MOVE requires index-only with other fingers curled.
+_LENIENT_MOVE    = CFG.get("lenient_move", False)
 
 
 def _dist(lm, a, b):
@@ -42,23 +48,28 @@ def recognize(fingers, lm, hand_size=None) -> str:
     else:
         pinch_thresh = _BASE_PINCH
 
-    # Pinch checked before finger combos — pinch overrides everything
-    if _dist(lm, 4, 8) < pinch_thresh:
+    # Pinch = thumb+index tips together. Optionally require index curled.
+    pinch_condition = _dist(lm, 4, 8) < pinch_thresh
+    if _REQUIRE_CURLED:
+        pinch_condition = pinch_condition and fingers[1] == 0
+    if pinch_condition:
         return CLICK
 
-    # MOVE: index up, middle/ring/pinky down. Thumb state intentionally ignored.
-    # fingersUp() reads thumb direction based on hand['type'] label to avoid confusions diue to mirror flip.
-    if fingers[1] == 1 and fingers[2] == 0 and fingers[3] == 0 and fingers[4] == 0:
-        return MOVE
-
+    # SCROLL: index+middle up, ring+pinky down (checked before MOVE).
     if fingers[1] == 1 and fingers[2] == 1 and fingers[3] == 0 and fingers[4] == 0:
-        # positive diff = middle tip is lower on screen = index is higher = scroll up
+        # positive diff = middle tip lower on screen = index higher = scroll up
         diff = lm[12][2] - lm[8][2]
-        if abs(diff) < _SCROLL_DEADZONE:
-            return IDLE   # ambiguous flat pose, do nothing
-        return SCROLL_UP if diff > 0 else SCROLL_DOWN
+        if abs(diff) >= _SCROLL_DEADZONE:
+            return SCROLL_UP if diff > 0 else SCROLL_DOWN
+        # flat peace sign falls through to MOVE
 
+    # RIGHT CLICK: thumb+pinky only
     if fingers == [1, 0, 0, 0, 1]:
         return RIGHT_CLICK
+
+    # MOVE: index extended. If lenient, allow open hand; else require index-only.
+    if fingers[1] == 1:
+        if _LENIENT_MOVE or (fingers[2] == 0 and fingers[3] == 0 and fingers[4] == 0):
+            return MOVE
 
     return IDLE

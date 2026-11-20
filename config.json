@@ -3,14 +3,17 @@
   "cam_w": 640,
   "cam_h": 480,
   "detection_con": 0.8,
+  "movement_mode": "relative",
   "active_zone": [0.2, 0.2, 0.8, 0.8],
   "smooth_frames": 8,
   "click_cooldown_ms": 400,
   "scroll_speed": 3,
   "scroll_min_diff": 15,
   "pinch_threshold": 40,
-  "pinch_scale_to_hand": false,
+  "pinch_scale_to_hand": true,
   "ref_hand_size": 100,
   "gesture_debounce_frames": 2,
-  "move_sensitivity": 3.5
+  "move_sensitivity": 3.5,
+  "pinch_requires_curled_index": false,
+  "lenient_move": false
 }

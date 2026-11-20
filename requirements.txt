@@ -1,6 +1,13 @@
+# Python 3.11 is required (see README "Python Version Warning").
+#
+# mediapipe is pinned to 0.10.35 deliberately:
+#   - mediapipe 1.x self-SIGKILLs during CPU init on Arch Linux
+#     (upstream bug google-ai-edge/mediapipe#6375, the "drishti" thread).
+#   - 0.10.35 is the last known-good line for this app on Python 3.11.
+# loosening this pin back to >=0.10.9 lets pip install 1.x and reintroduces the crash.
 opencv-python>=4.8
 cvzone>=1.6.1
-mediapipe>=0.10.9
+mediapipe==0.10.35
 pynput>=1.7.6
 pyautogui>=0.9.54
 numpy>=1.24
