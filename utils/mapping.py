@@ -11,7 +11,7 @@ _X1, _Y1 = _AZ[2] * _CW, _AZ[3] * _CH
 
 def to_screen(cx, cy, sw, sh):
     """Map camera pixel coords (inside active zone) → screen pixel coords.
-    Points outside the active zone are clamped to screen edges."""
-    x = int(np.interp(cx, [_X0, _X1], [0, sw]))
-    y = int(np.interp(cy, [_Y0, _Y1], [0, sh]))
-    return max(0, min(x, sw)), max(0, min(y, sh))
+    Points outside the active zone are clamped to screen edges (0 to sw-1 / sh-1)."""
+    x = int(np.interp(cx, [_X0, _X1], [0, sw - 1]))
+    y = int(np.interp(cy, [_Y0, _Y1], [0, sh - 1]))
+    return max(0, min(x, sw - 1)), max(0, min(y, sh - 1))
